@@ -12,7 +12,7 @@ download words_count.txt
    2- Run the script rename_lstm_celss -to replace paths for checkpoint files correctly (e.g. ./model.ckpt-2000000 if the files are in current directory).
     run inference, example:
     python3 im2txt/run_inference.py --checkpoint_path=models/model.ckpt-2000000 --vocab_file=models/word_counts.txt --input_files images/image1.jpg
-If you don't want to use CMD: modify the path in run_inference.py to your own path; Line 34, 37, & 38
+If you don't want to use CMD: modify the path in run_inference.py && inference_utils/inference_wrapper_base.py to your own path; Line 34, 37, & 38
 3-Line 182 in caption_generator.py of im2txt should be:
 most_likely_words = np.argsort(word_probabilities)[::-1]
 

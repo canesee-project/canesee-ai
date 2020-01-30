@@ -1,6 +1,5 @@
 import os
 import time
-import asyncio
 from app import start_app
 
 if __name__ == '__main__':
@@ -8,7 +7,7 @@ if __name__ == '__main__':
         if os.path.exists("/dev/rfcomm0"):
             print("Connected\n\n")
             try:
-                asyncio.run(start_app())
+                start_app()
             except Exception as e:
                 print(f'Disconnected:\n{e}\n\n Trying again in 15 seconds')
                 time.sleep(15)

@@ -1,19 +1,19 @@
 import asyncio
+from concurrent.futures import ThreadPoolExecutor
 import queue
-
 from bluetooth import BluetoothConnection
 
 tasks = queue.Queue(0)
 
 
-async def fetch_new_tasks(remote: BluetoothConnection):
+def fetch_new_tasks(remote: BluetoothConnection):
     while True:
         line = await remote.read()
         print("fetch: ", line)
         tasks.put(line, block=False)
 
 
-async def process_tasks():
+def process_tasks(remote: BluetoothConnection):
     while True:
         while tasks.empty():
             await asyncio.sleep(0.2)
@@ -21,6 +21,14 @@ async def process_tasks():
         print("process: ", task)
 
 
-async def start_app():
+def start_app():
     remote = BluetoothConnection()
-    await asyncio.gather(fetch_new_tasks(remote), process_tasks())
+    executor = ThreadPoolExecutor(2)
+    loop = asyncio.get_event_loop()
+    asyncio.ensure_future(loop.run_in_executor(executor, fetch_new_tasks, remote))
+    asyncio.ensure_future(loop.run_in_executor(executor, process_tasks, remote))
+    loop.run_forever()
+
+
+if __name__ == '__main__':
+    start_app()

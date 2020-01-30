@@ -8,17 +8,15 @@ tasks = queue.Queue(0)
 
 def fetch_new_tasks(remote: BluetoothConnection):
     while True:
-        line = await remote.read()
-        print("fetch: ", line)
-        tasks.put(line, block=False)
+        line = remote.read()
+        tasks.put(line)
 
 
 def process_tasks(remote: BluetoothConnection):
     while True:
-        while tasks.empty():
-            await asyncio.sleep(0.2)
-        task = tasks.get(block=False)
+        task = tasks.get()
         print("process: ", task)
+        remote.send('1hi there!\n')
 
 
 def start_app():

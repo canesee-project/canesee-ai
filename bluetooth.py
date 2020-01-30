@@ -1,12 +1,19 @@
 import serial
+import time
 
 
 class BluetoothConnection:
     def __init__(self):
-        self.port = serial.Serial("/dev/rfcomm0", baudrate=9600)
+        self.port = serial.Serial("/dev/rfcomm0", baudrate=115200)
+        time.sleep(1)
+        self.port.flushInput()
 
-    async def read(self):
-        return self.port.readline()
+    def read(self):
+        line = self.port.readline()
+        return line
 
-    async def send(self, text):
-        self.port.write(text)
+    def send(self, text):
+        self.port.write(text.encode())
+        self.port.flushOutput()
+        time.sleep(0.2)
+        print("sent: ", text.encode())

@@ -2,6 +2,7 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import queue
 from bluetooth import BluetoothConnection
+from camera_scenes_feed import run_video_cam
 
 tasks = queue.Queue(0)
 
@@ -19,11 +20,16 @@ def process_tasks(remote: BluetoothConnection):
         remote.send('1hi there!\n')
 
 
+def new_scenes():
+    run_video_cam(lambda frame: tasks.put(len(frame)))
+
+
 def start_app():
     remote = BluetoothConnection()
-    executor = ThreadPoolExecutor(2)
+    executor = ThreadPoolExecutor(3)
     loop = asyncio.get_event_loop()
     asyncio.ensure_future(loop.run_in_executor(executor, fetch_new_tasks, remote))
+    asyncio.ensure_future(loop.run_in_executor(executor, new_scenes))
     asyncio.ensure_future(loop.run_in_executor(executor, process_tasks, remote))
     loop.run_forever()
 

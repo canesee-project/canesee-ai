@@ -1,3 +1,4 @@
+
 # -*- coding:utf-8 -*-
 
 import cv2
@@ -64,13 +65,13 @@ def format_image(image):
 
 
 if __name__ == '__main__':
-    mode = 'cam'  # 'cam' default,or you can add a video path
+    mode ='cam'  # 'cam' default,or you can add a video path 
     if mode == 'cam':  # camera
         video_capture = cv2.VideoCapture(0)
     else:  # video
         video_capture = cv2.VideoCapture(mode)
     
-    # 设定摄像头分辨率
+    
     video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1000)
     video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 550)
 
@@ -79,7 +80,7 @@ if __name__ == '__main__':
     for index, emotion in enumerate(EMOTIONS):
         feelings_faces.append(cv2.imread('./emojis/' + emotion + '.png', -1))
 
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    fourcc = cv2.VideoWriter_fourcc(*'MP4V')
     out = cv2.VideoWriter('face.mp4', fourcc, 10, (640, 480))
     fps_time = 0
 
@@ -114,16 +115,16 @@ if __name__ == '__main__':
             # put CH name on frames
             img_PIL = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
             # 字体 字体*.ttc的存放路径一般是： /usr/share/fonts/opentype/noto/ 查找指令locate *.ttc
-            img_font = ImageFont.truetype('NotoSansCJK-Bold.ttc', 20)
+            img_font = ImageFont.truetype('arial', 20)
             fillColor = (0, 255, 0)
             position = (face[0]+face[2]-40, face[1]-25)
             draw = ImageDraw.Draw(img_PIL)
-            ch_str = '中国'
+            ch_str = 'israa'
             draw.text(position, ch_str, font=img_font, fill=fillColor)
             frame = cv2.cvtColor(np.asarray(img_PIL), cv2.COLOR_RGB2BGR)
         
         # FPS   
-        cv2.putText(image,
+        cv2.putText(frame,
                     "FPS: %f" % (1.0 / (time.time() - fps_time)),
                     (10, 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                     (0, 255, 0), 2)

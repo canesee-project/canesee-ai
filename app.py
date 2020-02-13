@@ -7,6 +7,8 @@ from io_types import *
 
 tasks = queue.Queue(0)
 
+current_frame = None
+
 
 def fetch_new_tasks(remote: BluetoothConnection):
     while True:
@@ -33,11 +35,16 @@ def process_tasks(remote: BluetoothConnection):
             elif change_type == MODE_CHANGE_OBJECT_DETECTION:
                 print('MODE_CHANGE_OBJECT_DETECTION')
         print("process: ", task)
-        remote.send('1hi there!\n')
+
+
+def detected_new_scene(frame):
+    global current_frame
+    current_frame = frame
+    # TODO: tasks.put(what?)
 
 
 def new_scenes():
-    run_video_cam(lambda frame: tasks.put(len(frame)))
+    run_video_cam(detected_new_scene)
 
 
 def start_app():

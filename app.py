@@ -3,19 +3,35 @@ from concurrent.futures import ThreadPoolExecutor
 import queue
 from bluetooth import BluetoothConnection
 from camera_scenes_feed import run_video_cam
+from io_types import *
 
 tasks = queue.Queue(0)
 
 
 def fetch_new_tasks(remote: BluetoothConnection):
     while True:
-        line = remote.read()
+        line = remote.read().decode()
         tasks.put(line)
 
 
 def process_tasks(remote: BluetoothConnection):
     while True:
         task = tasks.get()
+        # $type_$value
+        task_segments = task.split('_')
+        task_type = int(task_segments[0])
+        if task_type == INPUT_MODE_CHANGE:
+            change_type = int(task_segments[1])
+            if change_type == MODE_CHANGE_OCR:
+                print('MODE_CHANGE_OCR')
+            elif change_type == MODE_CHANGE_SCENE:
+                print('MODE_CHANGE_SCENE')
+            elif change_type == MODE_CHANGE_FACE_RECOGNITION:
+                print('MODE_CHANGE_FACE_RECOGNITION')
+            elif change_type == MODE_CHANGE_EMOTIONS:
+                print('MODE_CHANGE_EMOTIONS')
+            elif change_type == MODE_CHANGE_OBJECT_DETECTION:
+                print('MODE_CHANGE_OBJECT_DETECTION')
         print("process: ", task)
         remote.send('1hi there!\n')
 

@@ -1,6 +1,6 @@
 
 
-This repo contains a copy of im2txt (https://github.com/tensorflow/models/tree/master/im2txt),  pretrained models (https://github.com/tensorflow/models/issues/466) 
+This repo contains a copy of im2txt (https://github.com/tensorflow/models/tree/master/research/im2txt),  pretrained models (https://github.com/tensorflow/models/issues/466) 
 
 TF version: 1.15
 Python: 3.7

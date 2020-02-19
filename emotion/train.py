@@ -1,84 +1,55 @@
-from __future__ import division, absolute_import
-from dataset_loader import DatasetLoader
-import tflearn
-from tflearn.layers.core import input_data, dropout, fully_connected
-from tflearn.layers.conv import conv_2d, max_pool_2d
-from tflearn.layers.estimator import regression
-from constants import *
-from os.path import isfile, join
+from keras.models import Sequential
+from keras.optimizers import SGD,Adadelta
+from keras.layers.core import Flatten, Dense, Dropout
+from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D,AveragePooling2D
+from keras.layers import Input, Dense, Dropout, Activation, Flatten
+from keras.layers.advanced_activations import PReLU
+import keras
 
+def Build_CNN():
+    img_rows, img_cols = 48, 48
+    model = Sequential()
+    model.add(Convolution2D(64, 5, 5, border_mode='valid',
+                            input_shape=(img_rows, img_cols, 1)))
+    model.add(PReLU(init='zero', weights=None))
+    model.add(ZeroPadding2D(padding=(2, 2), dim_ordering='tf'))
+    model.add(MaxPooling2D(pool_size=(5, 5), strides=(2, 2)))
 
-class EmotionRecognition:
-    def __init__(self):
-        self.dataset = DatasetLoader()
+    model.add(ZeroPadding2D(padding=(1, 1), dim_ordering='tf'))
+    model.add(Convolution2D(64, 3, 3))
+    model.add(PReLU(init='zero', weights=None))
+    model.add(ZeroPadding2D(padding=(1, 1), dim_ordering='tf'))
+    model.add(Convolution2D(64, 3, 3))
+    model.add(PReLU(init='zero', weights=None))
+    model.add(AveragePooling2D(pool_size=(3, 3), strides=(2, 2)))
 
-    def build_network(self):
-        print('[+] Building CNN')
-        self.network = input_data(shape=[None, SIZE_FACE, SIZE_FACE, 1])
-        self.network = conv_2d(self.network, 64, 5, activation='relu')
-        self.network = max_pool_2d(self.network, 3, strides=2)
-        self.network = conv_2d(self.network, 64, 5, activation='relu')
-        self.network = max_pool_2d(self.network, 3, strides=2)
-        self.network = conv_2d(self.network, 128, 4, activation='relu')
-        self.network = dropout(self.network, 0.3)
-        self.network = fully_connected(self.network, 3072, activation='relu')
-        self.network = fully_connected(
-            self.network, len(EMOTIONS), activation='softmax')
-        self.network = regression(
-            self.network,
-            optimizer='momentum',
-            loss='categorical_crossentropy'
-        )
-        self.model = tflearn.DNN(
-            self.network,
-            max_checkpoints=1,
-            tensorboard_verbose=2,
-            tensorboard_dir="tflearn_logs"
-        )
-        self.load_model()
+    model.add(ZeroPadding2D(padding=(1, 1), dim_ordering='tf'))
+    model.add(Convolution2D(128, 3, 3))
+    model.add(PReLU(init='zero', weights=None))
+    model.add(ZeroPadding2D(padding=(1, 1), dim_ordering='tf'))
+    model.add(Convolution2D(128, 3, 3))
+    model.add(PReLU(init='zero', weights=None))
 
-    def load_saved_dataset(self):
-        self.dataset.load_from_save()
-        print('[+] Dataset found and loaded')
+    model.add(ZeroPadding2D(padding=(1, 1), dim_ordering='tf'))
+    model.add(AveragePooling2D(pool_size=(3, 3), strides=(2, 2)))
 
-    def start_training(self):
-        self.load_saved_dataset()
-        self.build_network()
-        if self.dataset is None:
-            self.load_saved_dataset()
-        # Training
-        print('[+] Training network')
-        self.model.fit(
-            self.dataset.images, self.dataset.labels,
-            validation_set=(self.dataset.images_test,
-                            self.dataset.labels_test),
-            n_epoch=10, #100 edited
-            batch_size=50, #50 edited
-            shuffle=True,
-            show_metric=True,
-            snapshot_step=200,
-            snapshot_epoch=True,
-            run_id='FER'
-        )
+    model.add(Flatten())
+    model.add(Dense(1024))
+    model.add(PReLU(init='zero', weights=None))
+    model.add(Dropout(0.2))
+    model.add(Dense(1024))
+    model.add(PReLU(init='zero', weights=None))
+    model.add(Dropout(0.2))
 
-    def predict(self, image):
-        if image is None:
-            return None
-        image = image.reshape([-1, SIZE_FACE, SIZE_FACE, 1])
-        return self.model.predict(image)
+    model.add(Dense(6))
 
-    def save_model(self):
-        self.model.save(join(SAVE_DIRECTORY, SAVE_MODEL_FILENAME))
-        print('[+] Model trained and saved at ' + SAVE_MODEL_FILENAME)
+    model.add(Activation('softmax'))
 
-    def load_model(self):
-        if isfile(join(SAVE_DIRECTORY, SAVE_MODEL_FILENAME)):
-            self.model.load(join(SAVE_DIRECTORY, SAVE_MODEL_FILENAME))
-            print('[+] Model loaded from ' + SAVE_MODEL_FILENAME)
+    ada = Adadelta(lr=0.1, rho=0.95, epsilon=1e-08)
+    model.compile(loss='categorical_crossentropy',
+                  optimizer=ada,
+                  metrics=['accuracy'])
+    
+    return model
 
-
-if __name__ == "__main__":
-    network = EmotionRecognition()
-    network.start_training()
-    network.save_model()
 

@@ -159,13 +159,6 @@ def _get_boxes(boxes, labels, thresh):
     return v_boxes, v_labels, v_scores
 
 
-# rounding numbers
-"""def _rounding(n, decimals=0):
-    multiplier = 10 ** decimals
-    return int(n * multiplier) / multiplier
-"""
-
-
 def _object_position(width, height, cx, cy):
 
     i, j = 0, 0
@@ -214,7 +207,7 @@ def detect(image, interpreter, labels):
     # define the expected input shape for the model
     input_w, input_h = 416, 416
     # define the probability threshold for detected objects
-    class_threshold = 0.4
+    class_threshold = 0.6
     # define the anchors
     anchors = [[116, 90, 156, 198, 373, 326], [30, 61, 62, 45, 59, 119], [10, 13, 16, 30, 33, 23]]
 
@@ -223,16 +216,14 @@ def detect(image, interpreter, labels):
                 ["بأسفل اليسار", "بالأسفل", "بأسفل اليمين"]]
 
     image, image_w, image_h = _load_image_pixels(image, (input_w, input_h))
+
     # Get input and output tensors.
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
     interpreter.set_tensor(input_details[0]['index'], image)    #index=250
-
     interpreter.invoke()
-
     # The function `get_tensor()` returns a copy of the tensor data.
     # Use `tensor()` in order to get a pointer to the tensor.
-    # t1 = time.time()
     yhat = []
     yhat.append(interpreter.get_tensor(output_details[0]['index']))     ##boxes#### index=224
     yhat.append(interpreter.get_tensor(output_details[1]['index']))     ##class_id#  index=243
@@ -256,8 +247,10 @@ def detect(image, interpreter, labels):
         centroidX = (box.xmax + box.xmin) / 2
         centroidY = (box.ymax + box.ymin) / 2
         x, y = _object_position(image_w, image_h, centroidX, centroidY)
-        # print("%-15s %-3.1f  [%3d, %3d]  %12s" % (v_labels[i], _rounding(v_scores[i], 1), centroidX, centroidY, position[y][x]))
         detected_array.append([ v_labels[i], position[y][x] ])
 
+
+
     return detected_array
+
 

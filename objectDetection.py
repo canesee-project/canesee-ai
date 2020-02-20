@@ -14,7 +14,7 @@ from keras.preprocessing.image import load_img
 from keras.preprocessing.image import img_to_array
 from matplotlib import pyplot
 from matplotlib.patches import Rectangle
-
+import time
 
 class BoundBox:
     def __init__(self, xmin, ymin, xmax, ymax, objness=None, classes=None):
@@ -46,10 +46,11 @@ def _sigmoid(x):
     return 1. / (1. + np.exp(-x))
 
 
-#decode predicted yhat arrays to dimintional boxes
+# decode predicted yhat arrays to dimintional boxes
 def decode_netout(netout, anchors, obj_thresh, net_h, net_w):
     grid_h, grid_w = netout.shape[:2]
     nb_box = 3
+    print("decode   ", netout.shape)
     netout = netout.reshape((grid_h, grid_w, nb_box, -1))
     nb_class = netout.shape[-1] - 5
     boxes = []
@@ -113,9 +114,9 @@ def bbox_iou(box1, box2):
     union = w1 * h1 + w2 * h2 - intersect
     return float(intersect) / union
 
+
 # non-max suppression
 def do_nms(boxes, nms_thresh):
-
     if len(boxes) > 0:
         nb_class = len(boxes[0].classes)
     else:
@@ -133,12 +134,14 @@ def do_nms(boxes, nms_thresh):
 
 # load and prepare an image
 def load_image_pixels(filename, shape):
+    # load saved image
     if type(filename) == str:
         # load the image to get its shape
         image = load_img(filename)
         width, height = image.size
         # load the image with the required size
         image = load_img(filename, target_size=shape)
+    # receive image from ip-webcam
     else:
         image = filename
         width, height, _ = image.shape
@@ -146,6 +149,7 @@ def load_image_pixels(filename, shape):
 
     # convert to numpy array
     image = img_to_array(image)
+    print(image.shape)
     # scale pixel values to [0, 1]
     image = image.astype('float32')
     image /= 255.0
@@ -156,7 +160,6 @@ def load_image_pixels(filename, shape):
 
 # get all of the results above a threshold
 def get_boxes(boxes, labels, thresh):
-
     v_boxes, v_labels, v_scores = list(), list(), list()
     # enumerate all boxes
     for box in boxes:
@@ -167,14 +170,13 @@ def get_boxes(boxes, labels, thresh):
                 v_boxes.append(box)
                 v_labels.append(labels[i])
                 v_scores.append(box.classes[i] * 100)
-
                 # don't break, many labels may trigger for one box
 
     return v_boxes, v_labels, v_scores
 
 
 # draw all results
-def draw_boxes(filename, v_boxes, v_labels, v_scores, v_ids):
+def draw_boxes(filename, v_boxes, v_labels, v_scores):
     # load the image
     if type(filename) == str:
         data = pyplot.imread(filename)
@@ -197,24 +199,69 @@ def draw_boxes(filename, v_boxes, v_labels, v_scores, v_ids):
         # draw the box
         ax.add_patch(rect)
         # draw text and score in top left corner
-        label = "%s(%.1f)(%3d)" % (v_labels[i], v_scores[i], v_ids[i])
+        label = "%s(%.1f)" % (v_labels[i], v_scores[i])
         pyplot.text(x1, y1, label, color='red')
     # show the plot
     pyplot.show()
 
-#rounding numbers
-def rounding( n , decimals=0):
+
+# rounding numbers
+def rounding(n, decimals=0):
     multiplier = 10 ** decimals
     return int(n * multiplier) / multiplier
 
-def detect(received_image, input_w, input_h, class_threshold, anchors, labels ):
 
+def object_position(width, height, cx, cy):
+    i, j = 0, 0
+    x_unit = cx / width
+    y_unit = cy / height
+    if 0 < x_unit < 1/3:
+        i = 0
+    elif 1/3 < x_unit < 2/3:
+        i = 1
+    elif 2/3 < x_unit < 1:
+        i = 2
+
+    if  0 < y_unit < 1/3:
+        j = 0
+    elif 1/3 < y_unit < 2/3:
+        j = 1
+    elif 2/3 < y_unit < 1:
+        j = 2
+
+    return i, j
+
+
+def detect(received_image):
     # load yolov3 model
     model = load_model('model.h5')
+    # define the expected input shape for the model
+    start = time.clock()
+    input_w, input_h = 416, 416
+    # define the probability threshold for detected objects
+    class_threshold = 0.6
+    # define the anchors
+    anchors = [[116, 90, 156, 198, 373, 326], [30, 61, 62, 45, 59, 119], [10, 13, 16, 30, 33, 23]]
+    # define the labels
+    labels = ['شخص', 'دراجة', 'سيارة', 'دراجات نارية', 'طائرة', 'حافلة', 'قطار', 'شاحنة نقل', 'قارب',
+              'إشارة ضوئية', 'صنبور الاطفاء', 'لافتة توقف', 'عداد موقف السيارات', 'مقعد', 'طائر', 'قط', 'الكلب',
+              'حصان', 'خروف', 'بقرة', 'فيل', 'يتحمل', 'الحمار الوحشي', 'زرافة', 'حقيبة ظهر', 'مظلة', 'حقيبة يد',
+              'ربطة عنق', 'حقيبة سفر', 'الطبق الطائر', 'زحلوقة', 'لوح التزلج', 'الكرة الرياضية', 'طائرة ورقية',
+              'مضرب البيسبول', 'قفاز البيسبول', 'لوح تزلج', 'مزلجة', 'مضرب التنس', 'زجاجة', 'كأس نبيذ', 'كوب',
+              'فرع', 'سكين', 'ملعقة', 'عاء', 'موز', 'تفاحة', 'ساندويتش', 'البرتقالي', 'بروكلي', 'جزرة', 'نقانق',
+              'بيتزا', 'الدونات', 'كيك', 'كرسي', 'كنبة', 'النبات المحفوظ بوعاء', 'السرير', 'طاولة الطعام', 'الحمام',
+              'رصد التلفزيون', 'حاسوب محمول', 'الفأر', 'التحكم عن بعد', 'لوحة المفاتيح',
+              'الهاتف الخلوي', 'الميكروويف', 'فرن', 'محمصة خبز كهربائية', 'مكتب المدير', 'ثلاجة', 'كتاب', 'ساعة حائط',
+              'مزهرية', 'مقص', 'دمية دب', 'مجفف شعر', 'فرشاة الأسنان']
+
+    position = [["أعلى اليسار", "أعلى", "أعلى اليمين"],
+                ["اليسار", "الوسط", "اليمين"],
+                ["أسفل اليسار", "أسفل", "أسفل اليمين"]]
 
     # define our new photo
     # load and prepare image , return image and actual size
     image, image_w, image_h = load_image_pixels(received_image, (input_w, input_h))
+    print("actual image size  (%3d, %3d)" % (image_w, image_h))
     """ make prediction ,
     yhat is 3 arrays predict both the bounding boxes and class labels but are encoded
     based on anchor boxes where each box return as ashape
@@ -222,32 +269,28 @@ def detect(received_image, input_w, input_h, class_threshold, anchors, labels ):
     yhat = model.predict(image)
     # summarize the shape of the list of arrays
     print([a.shape for a in yhat])
+
     boxes = list()
     for i in range(len(yhat)):
         # decode the output of the network
         boxes += decode_netout(yhat[i][0], anchors[i], class_threshold, input_h, input_w)
-
+        print("shape ", i," >>>",yhat[i][0].shape)
     # correct the sizes of the bounding boxes for the shape of the image
     correct_yolo_boxes(boxes, image_h, image_w, input_h, input_w)
     # suppress non-maximal boxes
     do_nms(boxes, 0.5)
     # get the details of the detected objects
     v_boxes, v_labels, v_scores = get_boxes(boxes, labels, class_threshold)
+    place = []
 
-    ##################################################
-    person_number = 0
-    distance = []
-    # for i in range(len(v_boxes)):
-    #     if v_labels[i] == 'person':
-    #         person_number += 1
-    #
-    #     print("%-8s %3.3f " % (v_labels[i], rounding(v_scores[i], 1)) )
-    # # draw what we found
-    # print(" persons number = ", person_number)
-    ##########################################
+    for i, box in enumerate(v_boxes):
+        centroidX = (box.xmax + box.xmin) / 2
+        centroidY = (box.ymax + box.ymin) / 2
+        x, y = object_position(image_w, image_h, centroidX, centroidY)
+        print("%-15s %-3.1f  [%3d, %3d]  %12s" % (v_labels[i], rounding(v_scores[i], 1), centroidX, centroidY, position[y][x]))
+        place.append(position[y][x])
 
+    end = time.clock()
+    print("time is : ", end-start)
 
-    #draw_boxes(received_image, v_boxes, v_labels, v_scores, v_ids)
-
-    return v_boxes,v_labels, v_scores
-
+detect("photos/street5.jpg")

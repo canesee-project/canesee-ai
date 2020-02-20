@@ -116,18 +116,13 @@ def make_yolov3_model():
     x = concatenate([x, skip_36])
     # Layer 99 => 106
     yolo_106 = _conv_block(x, [{'filter': 128, 'kernel': 1, 'stride': 1, 'bnorm': True, 'leaky': True, 'layer_idx': 99},
-                               {'filter': 256, 'kernel': 3, 'stride': 1, 'bnorm': True, 'leaky': True,
-                                'layer_idx': 100},
-                               {'filter': 128, 'kernel': 1, 'stride': 1, 'bnorm': True, 'leaky': True,
-                                'layer_idx': 101},
-                               {'filter': 256, 'kernel': 3, 'stride': 1, 'bnorm': True, 'leaky': True,
-                                'layer_idx': 102},
-                               {'filter': 128, 'kernel': 1, 'stride': 1, 'bnorm': True, 'leaky': True,
-                                'layer_idx': 103},
-                               {'filter': 256, 'kernel': 3, 'stride': 1, 'bnorm': True, 'leaky': True,
-                                'layer_idx': 104},
-                               {'filter': 255, 'kernel': 1, 'stride': 1, 'bnorm': False, 'leaky': False,
-                                'layer_idx': 105}], skip=False)
+                               {'filter': 256, 'kernel': 3, 'stride': 1, 'bnorm': True, 'leaky': True,'layer_idx': 100},
+                               {'filter': 128, 'kernel': 1, 'stride': 1, 'bnorm': True, 'leaky': True,'layer_idx': 101},
+                               {'filter': 256, 'kernel': 3, 'stride': 1, 'bnorm': True, 'leaky': True, 'layer_idx': 102},
+                               {'filter': 128, 'kernel': 1, 'stride': 1, 'bnorm': True, 'leaky': True, 'layer_idx': 103},
+                               {'filter': 256, 'kernel': 3, 'stride': 1, 'bnorm': True, 'leaky': True, 'layer_idx': 104},
+                               {'filter': 255, 'kernel': 1, 'stride': 1, 'bnorm': False, 'leaky': False, 'layer_idx': 105}],
+                                skip=False)
     model = Model(input_image, [yolo_82, yolo_94, yolo_106])
     return model
 

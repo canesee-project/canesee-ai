@@ -1,6 +1,22 @@
 
 
-This repo contains a copy of im2txt (https://github.com/tensorflow/models/tree/master/research/im2txt),  pretrained models (https://github.com/tensorflow/models/issues/466) 
+This repo contains a copy of im2txt model(https://github.com/tensorflow/models/tree/master/research/im2txt),  pretrained models (https://github.com/tensorflow/models/issues/466) 
+sudo apt install bazel-1.0.0
+
+**Show and Tell: A Neural Image Caption Generator**
+
+A TensorFlow implementation of the image-to-text model described in the paper:
+
+"Show and Tell: Lessons learned from the 2015 MSCOCO Image Captioning Challenge."
+
+Oriol Vinyals, Alexander Toshev, Samy Bengio, Dumitru Erhan.
+
+IEEE transactions on pattern analysis and machine intelligence (2016).
+
+Full text available at: http://arxiv.org/abs/1609.06647.
+
+The Show and Tell model is a deep neural network that learns how to describe the content of images.
+
 
 TF version: 1.15
 Python: 3.7

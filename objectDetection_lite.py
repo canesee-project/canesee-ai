@@ -12,6 +12,8 @@ import numpy as np
 import cv2
 
 
+interpreter = None
+labels = None
 class _BoundBox:
     def __init__(self, xmin, ymin, xmax, ymax, objness=None, classes=None):
         self.xmin = xmin
@@ -183,6 +185,8 @@ def _object_position(width, height, cx, cy):
 
 def init():
 
+    global interpreter, labels
+
     # define the labels
     labels = ['شخص', 'دراجة', 'سيارة', 'دراجات نارية', 'طائرة', 'حافلة', 'قطار', 'شاحنة نقل', 'قارب',
               'إشارة ضوئية', 'صنبور الاطفاء', 'لافتة توقف', 'عداد موقف السيارات', 'مقعد', 'طائر', 'قط', 'الكلب',
@@ -199,10 +203,8 @@ def init():
     interpreter = tf.lite.Interpreter(model_path="model2.tflite")
     interpreter.allocate_tensors()
 
-    return interpreter, labels
 
-
-def detect(image, interpreter, labels):
+def detect(image):
 
     # define the expected input shape for the model
     input_w, input_h = 416, 416
@@ -250,7 +252,7 @@ def detect(image, interpreter, labels):
         detected_array.append([ v_labels[i], position[y][x] ])
 
 
-
     return detected_array
+
 
 

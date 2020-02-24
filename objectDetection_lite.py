@@ -249,8 +249,7 @@ def detect(image):
         centroidX = (box.xmax + box.xmin) / 2
         centroidY = (box.ymax + box.ymin) / 2
         x, y = _object_position(image_w, image_h, centroidX, centroidY)
-        detected_array.append([ v_labels[i], position[y][x] ])
-
+        detected_array.append( (v_labels[i], position[y][x]) )
 
     return detected_array
 

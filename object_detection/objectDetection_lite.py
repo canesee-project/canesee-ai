@@ -11,9 +11,10 @@ import tensorflow as tf
 import numpy as np
 import cv2
 
-
 interpreter = None
 labels = None
+position = None
+
 class _BoundBox:
     def __init__(self, xmin, ymin, xmax, ymax, objness=None, classes=None):
         self.xmin = xmin
@@ -185,7 +186,7 @@ def _object_position(width, height, cx, cy):
 
 def init():
 
-    global interpreter, labels
+    global interpreter, labels, position
 
     # define the labels
     labels = ['شخص', 'دراجة', 'سيارة', 'دراجات نارية', 'طائرة', 'حافلة', 'قطار', 'شاحنة نقل', 'قارب',
@@ -198,6 +199,10 @@ def init():
               'رصد التلفزيون', 'حاسوب محمول', 'الفأر', 'التحكم عن بعد', 'لوحة المفاتيح',
               'الهاتف الخلوي', 'الميكروويف', 'فرن', 'محمصة خبز كهربائية', 'مكتب المدير', 'ثلاجة', 'كتاب', 'ساعة حائط',
               'مزهرية', 'مقص', 'دمية دب', 'مجفف شعر', 'فرشاة الأسنان']
+
+    position = [["بأعلى اليسار", "بالأعلى", "بأعلى اليمين"],
+                ["باليسار", "بالوسط", "باليمين"],
+                ["بأسفل اليسار", "بالأسفل", "بأسفل اليمين"]]
 
     # Load TFLite model and allocate tensors.
     interpreter = tf.lite.Interpreter(model_path="model2.tflite")
@@ -212,11 +217,6 @@ def detect(image):
     class_threshold = 0.6
     # define the anchors
     anchors = [[116, 90, 156, 198, 373, 326], [30, 61, 62, 45, 59, 119], [10, 13, 16, 30, 33, 23]]
-
-    position = [["بأعلى اليسار", "بالأعلى", "بأعلى اليمين"],
-                ["باليسار", "بالوسط", "باليمين"],
-                ["بأسفل اليسار", "بالأسفل", "بأسفل اليمين"]]
-
     image, image_w, image_h = _load_image_pixels(image, (input_w, input_h))
 
     # Get input and output tensors.
@@ -249,8 +249,7 @@ def detect(image):
         centroidX = (box.xmax + box.xmin) / 2
         centroidY = (box.ymax + box.ymin) / 2
         x, y = _object_position(image_w, image_h, centroidX, centroidY)
-        detected_array.append([ v_labels[i], position[y][x] ])
-
+        detected_array.append((v_labels[i], position[y][x]))
 
     return detected_array
 

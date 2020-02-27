@@ -13,7 +13,7 @@ class BluetoothConnection:
         return line
 
     def send(self, text):
-        self.port.write(text.encode())
+        self.port.write((text+'\n').encode())
         self.port.flushOutput()
         time.sleep(0.2)
         print("sent: ", text.encode())

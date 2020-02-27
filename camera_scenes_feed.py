@@ -1,3 +1,6 @@
+# @author mhashim6 on 2/3/20
+
+
 import cv2
 from scenedetect.scene_manager import SceneManager
 from scenedetect.detectors import ContentDetector

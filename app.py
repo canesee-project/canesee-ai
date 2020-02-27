@@ -4,6 +4,8 @@ import queue
 from bluetooth import BluetoothConnection
 from camera_scenes_feed import run_video_cam
 from io_types import *
+from object_detection.objectDetection_lite import detect as detect_objects
+import time
 
 tasks = queue.Queue(0)
 

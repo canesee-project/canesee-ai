@@ -7,6 +7,8 @@ from io_types import *
 from object_detection.objectDetection_lite import detect as detect_objects
 import time
 
+from utils import pretty_objects, json_of_result, log
+
 tasks = queue.Queue(0)
 
 current_frame = None
@@ -24,24 +26,32 @@ def process_tasks(remote: BluetoothConnection):
         # $type_$value
         task_segments = task.split('_')
         task_type = int(task_segments[0])
+        if current_frame is None:
+            continue
         if task_type == INPUT_MODE_CHANGE:
             change_type = int(task_segments[1])
             if change_type == MODE_CHANGE_OCR:
-                print('MODE_CHANGE_OCR')
+                log('MODE_CHANGE_OCR')
             elif change_type == MODE_CHANGE_SCENE:
-                print('MODE_CHANGE_SCENE')
+                log('MODE_CHANGE_SCENE')
             elif change_type == MODE_CHANGE_FACE_RECOGNITION:
-                print('MODE_CHANGE_FACE_RECOGNITION')
+                log('MODE_CHANGE_FACE_RECOGNITION')
             elif change_type == MODE_CHANGE_EMOTIONS:
-                print('MODE_CHANGE_EMOTIONS')
+                log('MODE_CHANGE_EMOTIONS')
             elif change_type == MODE_CHANGE_OBJECT_DETECTION:
-                print('MODE_CHANGE_OBJECT_DETECTION')
-        print("process: ", task)
+                log('MODE_CHANGE_OBJECT_DETECTION')
+                objs = pretty_objects(detect_objects(current_frame))
+                log('object detection results:\n', json_of_result(RESULT_OBJECT_DETECTION, objs))
+                remote.send(json_of_result(RESULT_OBJECT_DETECTION, objs))
+        log("process: ", task)
 
 
 def detected_new_scene(frame):
     global current_frame
     current_frame = frame
+    log("a new scene")
+    # TODO: ease up a little.
+    # time.sleep(0.5)
     # TODO: tasks.put(what?)
 
 

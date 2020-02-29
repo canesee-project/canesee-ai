@@ -22,6 +22,9 @@ from chainer import serializers
 sys.path.append('./code')
 from CaptionGenerator import CaptionGenerator
 
+chainer.global_config.autotune = True
+chainer.global_config.enable_backprop = False
+chainer.global_config.type_check = False
 
 class image_captioning ():
     def __init__(self,

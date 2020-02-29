@@ -5,7 +5,7 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import queue
 from bluetooth import BluetoothConnection
-from camera_scenes_feed import run_video_cam
+from camera_feed import run_video_cam, capture
 from io_types import *
 from object_detection.objectDetection_lite import detect as detect_objects
 import time
@@ -43,8 +43,8 @@ def process_tasks(remote: BluetoothConnection):
                 log('MODE_CHANGE_EMOTIONS')
             elif change_type == MODE_CHANGE_OBJECT_DETECTION:
                 log('MODE_CHANGE_OBJECT_DETECTION')
-                objs = pretty_objects(detect_objects(current_frame))
-                log('object detection results:\n', json_of_result(RESULT_OBJECT_DETECTION, objs))
+                objs = pretty_objects(detect_objects(capture()))
+                log('object detection results: ', objs)
                 remote.send(json_of_result(RESULT_OBJECT_DETECTION, objs))
         log("process: ", task)
 

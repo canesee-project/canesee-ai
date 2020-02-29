@@ -35,6 +35,6 @@ def face_recognition_function(image):
             name = "josh"
     print(name)
 
-init()
+
 
 

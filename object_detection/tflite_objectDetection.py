@@ -1,9 +1,9 @@
-
-import tensorflow as tf
 import time
+import tensorflow as tf
 import cv2
-import re
+# import re
 import numpy as np
+
 
 interpreter = None
 labels = None
@@ -52,7 +52,8 @@ def _getObjects(image, results, size):
         centroidY = (ymax + ymin) / 2
         x, y = _object_position(size[0], size[1], centroidX, centroidY)
         detected_array.append( (labels[int( obj['class_id']) ], position[y][x]) )
-        print("display :: ", detected_array[idx], " : ",str(round(obj['score'] * 100, 2)) + "%")
+        # print("display :: ", detected_array[idx], " : ",str(round(obj['score'] * 100, 2)) + "%")
+        # print("display :: ", detected_array[idx], "  ", obj['label'])
 
     return detected_array
 
@@ -104,16 +105,17 @@ def init():
 
     global interpreter, labels
     # define the labels
-    labels = ['شخص', 'دراجة', 'سيارة', 'دراجات نارية', 'طائرة', 'حافلة', 'قطار', 'شاحنة نقل', 'قارب',
-              'إشارة ضوئية', 'صنبور الاطفاء', 'لافتة توقف', 'عداد موقف السيارات', 'مقعد', 'طائر', 'قط', 'الكلب',
-              'حصان', 'خروف', 'بقرة', 'فيل', 'دب', 'الحمار الوحشي', 'زرافة', 'حقيبة ظهر', 'مظلة', 'حقيبة يد',
-              'ربطة عنق', 'حقيبة سفر', 'الطبق الطائر', 'زحلوقة', 'لوح التزلج', 'الكرة الرياضية', 'طائرة ورقية',
-              'مضرب البيسبول', 'قفاز البيسبول', 'لوح تزلج', 'مزلجة', 'مضرب التنس', 'زجاجة', 'كأس نبيذ', 'كوب',
-              'فرع', 'سكين', 'ملعقة', 'عاء', 'موز', 'تفاحة', 'ساندويتش', 'البرتقالي', 'بروكلي', 'جزرة', 'نقانق',
-              'بيتزا', 'الدونات', 'كيك', 'كرسي', 'كنبة', 'النبات المحفوظ بوعاء', 'السرير', 'طاولة الطعام', 'الحمام',
-              'رصد التلفزيون', 'حاسوب محمول', 'الفأر', 'التحكم عن بعد', 'لوحة المفاتيح',
-              'الهاتف الخلوي', 'الميكروويف', 'فرن', 'محمصة خبز كهربائية', 'مكتب المدير', 'ثلاجة', 'كتاب', 'ساعة حائط',
-              'مزهرية', 'مقص', 'دمية دب', 'مجفف شعر', 'فرشاة الأسنان']
+    labels = ['شخص', 'دراجة', 'سيارة', 'دراجات نارية', 'طائرة', 'حافلة', 'قطار', 'شاحنة نقل',
+              'قارب', 'إشارة ضوئية', 'صنبور الاطفاء','فاضى ', 'لافتة توقف', 'عداد موقف السيارات', 'مقعد', 'طائر', 'قط',
+              'الكلب','حصان', 'خروف', 'بقرة', 'فيل', 'دب', 'الحمار الوحشي', 'زرافة',"فاضى",
+              'حقيبة ظهر', 'مظلة',"فاضى","فاضى", 'حقيبة يد', 'ربطة عنق', 'حقيبة سفر', 'الطبق الطائر', 'زحلوقة', 'لوح التزلج',
+              'الكرة الرياضية', 'طائرة ورقية', 'مضرب البيسبول', 'قفاز البيسبول', 'لوح تزلج', 'مزلجة', 'مضرب التنس', 'زجاجة',"فاضى",
+              'كأس نبيذ', 'كوب', 'فرع', 'سكين', 'ملعقة', 'وعاء', 'موز', 'تفاحة',
+              'ساندويتش', 'البرتقالي', 'بروكلي', 'جزرة', 'نقانق', 'بيتزا', 'الدونات', 'كيك',
+              'كرسي', 'كنبة', 'النبات المحفوظ بوعاء', 'السرير',"فاضى", 'طاولة الطعام',"فاضى","فاضى", 'الحمام', 'التلفزيون', 'حاسوب محمول',
+              'الفأر', 'التحكم عن بعد', 'لوحة المفاتيح', 'الهاتف الخلوي', 'الميكروويف', 'فرن', 'محمصة خبز', 'مكتب المدير',
+              'ثلاجة',"فاضى", 'كتاب', 'ساعة حائط',  'مزهرية', 'مقص', 'دمية دب', 'مجفف شعر', 'فرشاة الأسنان']
+
     # labels = load_labels("labelmap.txt")
 
     # Load TFLite model and allocate tensors.
@@ -125,7 +127,7 @@ def detect(image):
 
     global labels
     global interpreter
-    threshold = 0.6
+    threshold = 0.4
     # define the expected input shape for the model
     input_w, input_h = 300, 300
 
@@ -150,7 +152,6 @@ def detect(image):
             result = {
                 'bounding_box': boxes[i],
                 'class_id': classes[i],
-                'label': labels[int(classes[i])],
                 'score': scores[i]
             }
             results.append(result)
@@ -164,7 +165,10 @@ def detect(image):
 if __name__ == "__main__":
 
     init()
-    image = cv2.imread("photos/street.jpg")
+    image = cv2.imread("photos/animal2.png")
     image_array = np.asarray(image)
+    t1 = time.time()
     detected_array = detect(image_array)
     print(detected_array)
+    t2 = time.time()
+    print("time : ", t2-t1)

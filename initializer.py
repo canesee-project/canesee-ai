@@ -8,3 +8,4 @@ from utils import log
 def init_models():
     log('init object detection...')
     init_object_detection()
+    # TODO: other models

@@ -29,18 +29,21 @@ def process_tasks(remote: BluetoothConnection):
         # $type_$value
         task_segments = task.split('_')
         task_type = int(task_segments[0])
-        if current_frame is None:
-            continue
+
         if task_type == INPUT_MODE_CHANGE:
             change_type = int(task_segments[1])
             if change_type == MODE_CHANGE_OCR:
                 log('MODE_CHANGE_OCR')
+                # TODO
             elif change_type == MODE_CHANGE_SCENE:
                 log('MODE_CHANGE_SCENE')
+                # TODO
             elif change_type == MODE_CHANGE_FACE_RECOGNITION:
                 log('MODE_CHANGE_FACE_RECOGNITION')
+                # TODO
             elif change_type == MODE_CHANGE_EMOTIONS:
                 log('MODE_CHANGE_EMOTIONS')
+                # TODO
             elif change_type == MODE_CHANGE_OBJECT_DETECTION:
                 log('MODE_CHANGE_OBJECT_DETECTION')
                 objs = pretty_objects(detect_objects(capture()))

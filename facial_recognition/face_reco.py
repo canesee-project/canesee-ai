@@ -1,9 +1,13 @@
+"""
+@author: Adel Abu Hashim
+"""
+
 import face_recognition as face
 
 known_faces_encodings = []
 
 def init ():
-
+    """Load dataset"""
     global known_faces_encodings
 
     image_of_adel = face.load_image_file("adel.jpg")
@@ -16,7 +20,12 @@ def init ():
 
     known_faces_encodings = [face_encoding_of_adel, face_encoding_of_luis, face_encoding_of_josh]
 
-def face_recognition_function(image):
+'''def add_face(image, name):
+    if (reco(image) == "unknown") :
+        face_encodings_of{}.format(name) =face.face_encodings(image)'''
+
+
+def reco(image):
     """Return a string of the name of person in the photo. """
     global known_faces_encodings
 
@@ -33,8 +42,10 @@ def face_recognition_function(image):
             name = "luis"
         elif results[2]:
             name = "josh"
-    print(name)
+    return name
 
 
-
+init()
+my_img = face.load_image_file("luis3.png")
+reco(my_img)
 

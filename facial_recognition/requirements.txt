@@ -1,0 +1,6 @@
+Click==7.0
+cv==1.0.0
+face-recognition-models==0.3.0
+numpy==1.18.1
+Pillow==7.0.0
+pytesseract==0.3.2

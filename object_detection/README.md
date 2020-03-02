@@ -31,4 +31,7 @@
        
 - Python: 3.6.4
 
+- You can find the lite module of object detection here:
+            " https://drive.google.com/drive/folders/1WvN_shhkbUPHGSmcg5Je69wupFRLXL1F "
+
 - Now i can say to you have a fun !!!!!

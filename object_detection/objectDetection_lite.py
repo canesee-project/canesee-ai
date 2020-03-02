@@ -205,7 +205,7 @@ def init():
                 ["بأسفل اليسار", "بالأسفل", "بأسفل اليمين"]]
 
     # Load TFLite model and allocate tensors.
-    interpreter = tf.lite.Interpreter(model_path="model2.tflite")
+    interpreter = tf.lite.Interpreter(model_path="detect.tflite")
     interpreter.allocate_tensors()
 
 
@@ -253,5 +253,13 @@ def detect(image):
 
     return detected_array
 
+if __name__ == "__main__":
 
+    init()
+    image = cv2.imread("photos/street1.jpg")
+    print(np.shape(image))
+    image_array = np.asarray(image)
+    print(image_array.shape)
+    detected_array = detect(image_array)
+    #print(detected_array)
 

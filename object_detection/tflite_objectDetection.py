@@ -1,5 +1,5 @@
-import time
-import tensorflow as tf
+# import time
+import tflite_runtime.interpreter as tflite
 import cv2
 # import re
 import numpy as np
@@ -119,7 +119,7 @@ def init():
     # labels = load_labels("labelmap.txt")
 
     # Load TFLite model and allocate tensors.
-    interpreter = tf.lite.Interpreter(model_path="detect.tflite")
+    interpreter = tflite.Interpreter(model_path="detect.tflite")
     interpreter.allocate_tensors()
 
 
@@ -162,13 +162,13 @@ def detect(image):
     return detected_array
 
 
-if __name__ == "__main__":
-
-    init()
-    image = cv2.imread("photos/animal2.png")
-    image_array = np.asarray(image)
-    t1 = time.time()
-    detected_array = detect(image_array)
-    print(detected_array)
-    t2 = time.time()
-    print("time : ", t2-t1)
+# if __name__ == "__main__":
+#
+#     init()
+#     image = cv2.imread("photos/animal2.png")
+#     image_array = np.asarray(image)
+#     t1 = time.time()
+#     detected_array = detect(image_array)
+#     print(detected_array)
+#     t2 = time.time()
+#     print("time : ", t2-t1)

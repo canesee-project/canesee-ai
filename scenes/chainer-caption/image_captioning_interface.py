@@ -7,10 +7,11 @@ Sample code to generate caption using beam search
 import sys
 import json
 import os
+import cv2
 # comment out the below if you want to do type check. Remeber this have to be done BEFORE import chainer
 #os.environ["CHAINER_TYPE_CHECK"] = "0"
 import chainer 
-
+from PIL import Image
 import argparse
 import numpy as np
 import math
@@ -50,13 +51,33 @@ class image_captioning ():
         image_feature=self.caption_generator.cnn_model(image_array, "feature").data.reshape(1,1,2048)
         return self.caption_generator.generate_from_img_feature(image_feature)
 
+    def resize (self,image_array):
+        image_array = cv2.resize(image_array, dsize=(224, 224))
+        cv2.imwrite("bigger.jpg",image_array)
+        image_array = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB)
+        pixels = np.asarray(image_array).astype(np.float32)
+        pixels = pixels[:,:,::-1].transpose(2,0,1)
+        pixels -= self.caption_generator.image_loader.mean_image
+        return pixels.reshape((1,) + pixels.shape)
 
+
+    def resize_img_and_generate(self,image_array):
+        return self.generate_from_img_nparray(self.resize(image_array))
+
+#run this file for test purpose
 if __name__ == '__main__':
+    test_image_path = "test3.jpg"
     image_captioning=image_captioning()
-    np_image = image_captioning.caption_generator.image_loader.load("test3.jpg")
-    captions = image_captioning.generate_from_img_nparray(np_image)
+    #test generate_from_img_nparray
+    # np_image = image_captioning.caption_generator.image_loader.load(test_image_path)
+    # captions = image_captioning.generate_from_img_nparray(np_image)
+    # for caption in captions:
+    #     print (" ".join(caption["sentence"]))
+    #     print (caption["log_likelihood"])
+
+    #test resize_img_and_generate
+    image = cv2.imread(test_image_path)
+    captions = image_captioning.resize_img_and_generate(image)
     for caption in captions:
         print (" ".join(caption["sentence"]))
         print (caption["log_likelihood"])
-
-

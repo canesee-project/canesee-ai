@@ -53,7 +53,6 @@ class image_captioning ():
 
     def resize (self,image_array):
         image_array = cv2.resize(image_array, dsize=(224, 224))
-        cv2.imwrite("bigger.jpg",image_array)
         image_array = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB)
         pixels = np.asarray(image_array).astype(np.float32)
         pixels = pixels[:,:,::-1].transpose(2,0,1)

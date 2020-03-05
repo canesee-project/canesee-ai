@@ -1,19 +1,18 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import cv2
 import numpy as np
-
-from PIL import Image
-
 import tensorflow as tf
 
+from PIL import Image
+from translator import translate_eg_ar
+
+
 def init():
-    global labels
+    global labels, Arabic_labels
     global interpreter
 
-    labels = ['Angry', 'Disgusted', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprised']
+    #labels = ['Angry', 'Disgusted', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprised']
+    #Arabic_labels = translate_eg_ar(labels)
+    Arabic_labels =['غاضب', 'مشمئز', 'خائف', 'سعيد', 'محايد', 'حزين', 'متفاجىء']
     interpreter = tf.lite.Interpreter(model_path="model.tflite")
     interpreter.allocate_tensors()
 
@@ -34,14 +33,20 @@ def detect(image):
 
     output_data = interpreter.get_tensor(output_details[0]['index'])
     results = np.squeeze(output_data)
-    top_percentage = results.argsort()[-1:][::-1]
+    top_p = results.argsort()[-1:][::-1]
 
-    for i in top_percentage:
+    for i in top_p :
+       expression = (Arabic_labels[i])
 
-        print('{:08.6f}: {}'.format(float(results[i]), labels[i]))
+
+    return expression
+
+
+
 
 if __name__ == '__main__':
 
     init()
-    img = Image.open('sad.jpg')
-    detect(img)
+    img = Image.open('surprised.jpg')
+    emotion = detect(img)
+    print(emotion)

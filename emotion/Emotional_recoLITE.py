@@ -34,18 +34,14 @@ def detect(image):
 
     output_data = interpreter.get_tensor(output_details[0]['index'])
     results = np.squeeze(output_data)
-    top_k = results.argsort()[-1:][::-1]
+    top_percentage = results.argsort()[-1:][::-1]
 
+    for i in top_percentage:
 
-    for i in top_k:
-        if input_details:
-            print('{:08.6f}: {}'.format(float(results[i]), labels[i]))
-        else:
-            print('{:08.6f}: {}'.format(float(results[i] / 255.0), labels[i]))
-
+        print('{:08.6f}: {}'.format(float(results[i]), labels[i]))
 
 if __name__ == '__main__':
 
     init()
-    img = Image.open('5surprised.jpg')
+    img = Image.open('sad.jpg')
     detect(img)

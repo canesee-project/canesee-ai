@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 
 from PIL import Image
-from translator import translate_eg_ar
+#from translator import translate_eg_ar
 
 
 def init():
@@ -12,7 +12,7 @@ def init():
 
     #labels = ['Angry', 'Disgusted', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprised']
     #Arabic_labels = translate_eg_ar(labels)
-    Arabic_labels =['غاضب', 'مشمئز', 'خائف', 'سعيد', 'محايد', 'حزين', 'متفاجىء']
+    Arabic_labels =['غاضب', 'مشمئز', 'خائف', 'سعيد', 'طبيعى', 'حزين', 'متفاجىء']
     interpreter = tf.lite.Interpreter(model_path="model.tflite")
     interpreter.allocate_tensors()
 

@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import tensorflow as tf
 
-from PIL import Image
+
 #from translator import translate_eg_ar
 
 
@@ -21,25 +21,39 @@ def init():
 def detect(image):
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
-    height = 720
-    width = 480
-    data = image
-    gray = (np.float32(data), cv2.COLOR_RGB2GRAY)
-    data = np.array(gray)
-    data = data.resize((width, height))
+    # check the type of the input tensor
+    floating_model = input_details[0]['dtype'] == np.float32
+    height = 48
+    width = 48
+    img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    #print(img.shape)
+    img = np.asarray(img)
+    img=cv2.resize(img,(width,height))
+    img = np.expand_dims(img, axis=-1)
+    #print(img.shape)
+    img= img.astype('float32')
+    img /= 255.0
 
+
+    input_data = np.expand_dims(img, axis=0)
+    #print(input_data.shape)
+
+    if floating_model:
+      input_data = (np.float32(input_data) - 127.5) / 127.5
+
+    interpreter.set_tensor(input_details[0]['index'], input_data)
 
     interpreter.invoke()
 
     output_data = interpreter.get_tensor(output_details[0]['index'])
     results = np.squeeze(output_data)
-    top_p = results.argsort()[-1:][::-1]
 
-    for i in top_p :
-       expression = (Arabic_labels[i])
+    top_k = results.argsort()[-5:][::-1]
+    #print(Arabic_labels[top_k[0]])
 
 
-    return expression
+
+    return Arabic_labels[top_k[0]]
 
 
 
@@ -47,6 +61,6 @@ def detect(image):
 if __name__ == '__main__':
 
     init()
-    img = Image.open('surprised.jpg')
+    img = cv2.imread('sad.jpg')
     emotion = detect(img)
     print(emotion)

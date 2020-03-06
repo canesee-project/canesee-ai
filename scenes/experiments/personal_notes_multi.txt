@@ -1,0 +1,158 @@
+#Jp-En
+
+#First dataset preparation
+python3 create_MSCOCO_en_jp_dataset.py \
+--en ../data/MSCOCO/captions_train2014.json \
+--out-en ../data/MSCOCO/mscoco_en_only_26k.json \
+--jp ../data/MSCOCO/yjcaptions26k_clean.json \
+--out-jp ../data/MSCOCO/mscoco_jp.json
+common image ids 26500
+
+#English only
+python preprocess_captions.py \
+--input ../data/MSCOCO/mscoco_en_only_26k.json \
+--output ../data/MSCOCO/mscoco_en_only_26k_all_preprocessed.json \
+--val 2000 \
+--test 2000 \
+('total distinct words:', 14216)
+top 20 frequent words:
+(u'a', 185335)
+('<sos>', 112551)
+('<eos>', 112551)
+(u'on', 40804)
+(u'of', 38102)
+(u'the', 37914)
+(u'in', 34863)
+(u'with', 29267)
+(u'and', 26625)
+(u'is', 18701)
+(u'man', 14062)
+(u'to', 13330)
+(u'sitting', 9963)
+(u'an', 9699)
+(u'two', 9055)
+(u',', 8518)
+(u'at', 8377)
+(u'people', 8227)
+(u'standing', 7998)
+(u'are', 7867)
+('total distinct words after the cutoff:', 4948)
+('The output file is saved to', '../data/MSCOCO/mscoco_en_only_26k_all_preprocessed.json')
+
+python train_image_caption_model.py \
+--gpu 0 \
+--savedir ./experiments/en_only_1 \
+--captions ./data/MSCOCO/mscoco_en_only_26k_all_preprocessed.json \
+--preload True \
+--epoch 40 \
+--batch 128 \
+--hidden 512  \
+--cnn-tune-after -1 \
+
+#Japanese only
+python preprocess_captions.py \
+--input ../data/MSCOCO/mscoco_jp.json \
+--output ../data/MSCOCO/mscoco_jp_all_preprocessed.json \
+--jp True \
+--val 2000 \
+--test 2000 \
+
+('total distinct words:', 18823)
+top 20 frequent words:
+(の,114121)
+(<sos>,111852)
+(<eos>,111852)
+(。,110211)
+(が,104870)
+(て,101423)
+(ます,99709)
+(い,75191)
+(に,73340)
+(を,59157)
+(で,31035)
+(た,26239)
+(、,23518)
+(し,18194)
+(れ,16701)
+(いる,16559)
+(人,15548)
+(上,15510)
+(と,14558)
+(あり,14184)
+('total distinct words after the cutoff:', 6098)
+('The output file is saved to', '../data/MSCOCO/mscoco_jp_all_preprocessed.json')
+
+python train_image_caption_model.py \
+--gpu 0 \
+--savedir ./experiments/jp_only_1 \
+--captions ./data/MSCOCO/mscoco_jp_all_preprocessed.json \
+--preload True \
+--epoch 40 \
+--batch 128 \
+--hidden 512  \
+--cnn-tune-after -1 \
+
+#muti
+python train_image_caption_model.py \
+--gpu 0 \
+--savedir ./experiments/en_jp_multi_1 \
+--captions "<en>:./data/MSCOCO/mscoco_train2014_all_preprocessed.json;<jp>:./data/MSCOCO/mscoco_jp_all_preprocessed.json;" \
+--preload True \
+--epoch 40 \
+--batch 128 \
+--hidden 512  \
+--cnn-tune-after -1 \
+
+#muti
+python train_image_caption_model.py \
+--gpu 0 \
+--savedir ./experiments/en_jp_multi_2layer \
+--captions "<en>:./data/MSCOCO/mscoco_train2014_all_preprocessed.json;<jp>:./data/MSCOCO/mscoco_jp_all_preprocessed.json;" \
+--preload True \
+--epoch 40 \
+--batch 128 \
+--hidden 512  \
+--layers  2 \
+--cnn-tune-after -1 \
+
+#Ch-Jp
+#First dataset preparation
+python3 create_MSCOCO_cn_dataset_intersect_jp.py \
+--cn ../data/MSCOCO/captions_train2014_cn_translation.json \
+--out-cn ../data/MSCOCO/mscoco_mt_ch_only_26k.json \
+--jp ../data/MSCOCO/yjcaptions26k_clean.json
+
+common image ids 26500
+26500
+../data/MSCOCO/mscoco_mt_ch_only_26k.json
+
+#Chinese only
+python preprocess_captions.py \
+--input ../data/MSCOCO/mscoco_mt_ch_only_26k.json \
+--output ../data/MSCOCO/mscoco_mt_ch_only_26k_all_preprocessed.json \
+--cn True \
+--val 2000 \
+--test 2000 \
+
+
+#Chinese only
+python train_image_caption_model.py \
+--gpu 0 \
+--savedir ./experiments/cn_only_1 \
+--captions ./data/MSCOCO/mscoco_mt_ch_only_26k_all_preprocessed.json \
+--preload True \
+--epoch 40 \
+--batch 128 \
+--hidden 512  \
+--cnn-tune-after -1 \
+
+#Chinese + Japanese
+python train_image_caption_model.py \
+--gpu 0 \
+--savedir ./experiments/cn_jp_multi_1 \
+--captions "<cn>:./data/MSCOCO/mscoco_mt_ch_only_26k_all_preprocessed.json;<jp>:./data/MSCOCO/mscoco_jp_all_preprocessed.json;" \
+--preload False \
+--epoch 40 \
+--batch 128 \
+--hidden 512  \
+--cnn-tune-after -1 \

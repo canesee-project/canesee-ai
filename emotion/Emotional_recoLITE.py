@@ -21,8 +21,8 @@ def init():
 def detect(image):
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
-    height = 48
-    width = 48
+    height = 720
+    width = 480
     data = image
     gray = (np.float32(data), cv2.COLOR_RGB2GRAY)
     data = np.array(gray)

@@ -29,14 +29,19 @@ We hae three models to Save: 1-imoagenet weights 2-NN Enoder 3-RNN deoder
 Since these are subclassed Keras models and not Functional or Sequential one, so I could not use model.save and model.load directly.
 
 Instead I had to use **model.save_weights** and model.load_weights. 
+
 #Saving the enoder model
+
 model.load_weights can be called only after model.build and model.build requires input_shape parameter which has to be tuple (not list of tuples). For the NN enoder the input_shape is (49,  1280)/ 
 
 #Saving the Attention weights and the RNN deoder weights
 For our RNN decoder, the input_shape annot be defined sine we have multiple inputs. Keras docs specify no way to call model.build with multiple inputs.
-So to sav the RNN deoder:
+So to save the RNN deoder:
+
 1- save each weight matrix in .npy files
+
 2- re-create the subclassed models, but this time you use [Keras initializers](https://keras.io/initializers/) for each weight in each layer. 
+
 3-Instantiate the Encoder and Decoder classes as you normally would
 
 

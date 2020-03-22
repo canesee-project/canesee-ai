@@ -22,9 +22,16 @@ def init ():
                    "luis": face_encoding_of_luis,
                    "josh": face_encoding_of_josh}
 
-'''def add_face(image, name):
-    if (reco(image) == "unknown") :
-        face_encodings_of{}.format(name) =face.face_encodings(image)'''
+
+def new_face (image, name):
+    """
+    updates dict"""
+    global known_faces
+
+    #image = face.load_image_file(image)
+    known_faces[name] = face.face_encodings(image)
+
+
 
 
 def reco(image):
@@ -44,7 +51,8 @@ def reco(image):
 
 
 init()
-my_img = face.load_image_file("luis3.png")
-print(reco(my_img))
+new_face("luis3.png","luis")
+
+print (known_faces)
 
 

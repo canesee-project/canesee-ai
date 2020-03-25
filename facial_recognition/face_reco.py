@@ -53,8 +53,6 @@ def new_face (image, name):
 
 
 def recognize(image):
-    """Return a string of the name of person in the photo. """
-
     """
        Add new face to data set.
        Args:

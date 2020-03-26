@@ -14,9 +14,9 @@ def init ():
     '''
     global known_faces
     # load test images
-    image_of_adel = face.load_image_file("adel.jpg")
-    image_of_luis = face.load_image_file("luis.jpg")
-    image_of_josh = face.load_image_file("josh.jpg")
+    image_of_adel = face.load_image_file("test_data/adel.jpg")
+    image_of_luis = face.load_image_file("test_data/luis.jpg")
+    image_of_josh = face.load_image_file("test_data/josh.jpg")
     # extract face encodings for each face in numpy array
     face_encoding_of_adel = face.face_encodings(image_of_adel)[0]
     face_encoding_of_luis = face.face_encodings(image_of_luis)[0]

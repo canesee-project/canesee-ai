@@ -11,7 +11,7 @@ def init ():
     import data
     return data.known_faces
 
-def load_tset_data ():
+def load_test_data ():
     '''
     add test data
     '''
@@ -80,7 +80,8 @@ def recognize(image):
     # return the name which is related two right face encodings.
     return names[index]
 
-#init() #uncomment for first time; dat file is empty!
+#load_test_data() #Uncomment to test
+
 ##test known image
 #print(recognize('test_data/adel.jpg'))
 

@@ -1,1 +1,1 @@
-known_faces = {}
+known_face

@@ -3,16 +3,18 @@
 """
 
 import face_recognition as face
-import data
-
-# import known_faces from data file.
-known_faces = data.known_faces
 
 def init ():
+    """
+    Load dataset from datafile .
+    """
+    import data
+    return data.known_faces
+
+def load_tset_data ():
     '''
     add test data
     '''
-    global known_faces
     # load test images
     image_of_adel = face.load_image_file("test_data/adel.jpg")
     image_of_luis = face.load_image_file("test_data/luis.jpg")
@@ -37,10 +39,9 @@ def new_face (image, name):
            (image- numpy array) image - new person's image
            (str) name - person's name
        """
-    global known_faces
-
-    #image = face.load_image_file(image) #uncomment to test on loaded image file
-
+    # import known_faces from data file.
+    known_faces = init()
+    image = face.load_image_file(image) #uncomment to test on loaded image file
     # add new element to known_faces dict.
     # use "tolist()" to permit importing dict.
     known_faces[name] = face.face_encodings(image)[0].tolist()
@@ -60,13 +61,14 @@ def recognize(image):
         Returns:
             names[index] - Recognized person name.
        """
-    global known_faces
+    # import known_faces from data file.
+    known_faces = init()
+    input_image = face.load_image_file(image) #uncomment to test on loaded image file
 
-    #input_image = face.load_image_file(image) #uncomment to test on loaded image file
-
-    input_image = image
+    #input_image = image
     # extract face encodings of image in numpy array
-    input_image_encodings = face.face_encodings(input_image)
+    input_image = image
+    #input_image_encodings = face.face_encodings(input_image)
     # making two lists; dict values and names.
     known_faces_encodings = list(known_faces.values())
     names = list(known_faces.keys())
@@ -79,6 +81,9 @@ def recognize(image):
     return names[index]
 
 #init() #uncomment for first time; dat file is empty!
+
+##test known image
+#print(recognize('test_data/adel.jpg'))
 
 
 

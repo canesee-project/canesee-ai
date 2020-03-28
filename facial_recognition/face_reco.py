@@ -81,7 +81,6 @@ def recognize(image):
     return names[index]
 
 #init() #uncomment for first time; dat file is empty!
-
 ##test known image
 #print(recognize('test_data/adel.jpg'))
 

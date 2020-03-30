@@ -4,12 +4,16 @@
 
 import face_recognition as face
 
+known_faces = {}
+
 def init ():
     """
     Load dataset from datafile .
     """
+    global known_faces
     import data
-    return data.known_faces
+    known_faces = data.known_faces
+
 
 def load_test_data ():
     '''
@@ -17,16 +21,16 @@ def load_test_data ():
     '''
     # load test images
     image_of_adel = face.load_image_file("test_data/adel.jpg")
-    image_of_luis = face.load_image_file("test_data/luis.jpg")
-    image_of_josh = face.load_image_file("test_data/josh.jpg")
+    image_of_yossef = face.load_image_file("test_data/yossef.jpg")
+    image_of_hashim = face.load_image_file("test_data/hashim.jpg")
     # extract face encodings for each face in numpy array
     face_encoding_of_adel = face.face_encodings(image_of_adel)[0]
-    face_encoding_of_luis = face.face_encodings(image_of_luis)[0]
-    face_encoding_of_josh = face.face_encodings(image_of_josh)[0]
+    face_encoding_of_yossef = face.face_encodings(image_of_yossef)[0]
+    face_encoding_of_hashim = face.face_encodings(image_of_hashim)[0]
     # store each person name and his face encodings-converted from numpy array to list- in dict.
     known_faces = {"adel": face_encoding_of_adel.tolist(),
-                   "luis": face_encoding_of_luis.tolist(),
-                   "josh": face_encoding_of_josh.tolist()}
+                   "yossef": face_encoding_of_yossef.tolist(),
+                   "hashim": face_encoding_of_hashim.tolist()}
     # write dict in data file after updating it
     f = open("data.py", "w")
     f.write("known_faces = {}".format(known_faces))
@@ -40,7 +44,7 @@ def new_face (image, name):
            (str) name - person's name
        """
     # import known_faces from data file.
-    known_faces = init()
+    global known_faces
     image = face.load_image_file(image) #uncomment to test on loaded image file
     # add new element to known_faces dict.
     # use "tolist()" to permit importing dict.
@@ -62,10 +66,9 @@ def recognize(image):
             names[index] - Recognized person name.
        """
     # import known_faces from data file.
-    known_faces = init()
-    input_image = face.load_image_file(image) #uncomment to test on loaded image file
+    global known_faces
+    #input_image = face.load_image_file(image) #uncomment to test on loaded image file
 
-    #input_image = image
     # extract face encodings of image in numpy array
     input_image = image
     #input_image_encodings = face.face_encodings(input_image)

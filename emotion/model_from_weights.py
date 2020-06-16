@@ -4,6 +4,7 @@ import os
 model = Build_CNN()
 print(model.summary())
 weights = './model/emotion_best_weights.h5'
+
 if os.path.exists(weights):
     print("Loading weight")
     model.load_weights(weights)

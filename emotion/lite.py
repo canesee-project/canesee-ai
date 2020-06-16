@@ -13,7 +13,7 @@ def init():
     #labels = ['Angry', 'Disgusted', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprised']
     #Arabic_labels = translate_eg_ar(labels)
     Arabic_labels = ['غاضب', 'مشمئز', 'خائف', 'سعيد', 'طبيعى', 'حزين', 'متفاجىء']
-    interpreter = tf.lite.Interpreter(model_path="model2.tflite")
+    interpreter = tf.lite.Interpreter(model_path="model33.tflite")
     interpreter.allocate_tensors()
 
 
@@ -75,6 +75,6 @@ def detect(image):
 
 if __name__ == '__main__':
     init()
-    img = cv2.imread('4disguested.jpg')
+    img = cv2.imread('1happy.jpg')
     emotion = detect(img)
     print(emotion)

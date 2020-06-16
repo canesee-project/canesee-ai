@@ -1,10 +1,12 @@
 from keras.models import Sequential
-from keras.optimizers import SGD,Adadelta
+from keras.optimizers import SGD, Adadelta
 from keras.layers.core import Flatten, Dense, Dropout
-from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D,AveragePooling2D
+from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D, AveragePooling2D
 from keras.layers import Input, Dense, Dropout, Activation, Flatten
 from keras.layers.advanced_activations import PReLU
 import keras
+
+
 
 def Build_CNN():
     img_rows, img_cols = 48, 48
@@ -49,7 +51,12 @@ def Build_CNN():
     model.compile(loss='categorical_crossentropy',
                   optimizer=ada,
                   metrics=['accuracy'])
-    
+
     return model
 
+model = Build_CNN()
+print(model.summary())
+#Save model
+model.save('emotion_model.h5')
 
+print("Model Saved")

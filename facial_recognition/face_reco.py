@@ -32,8 +32,8 @@ def load_test_data():
     face_encoding_of_hashim = face.face_encodings(image_of_hashim)[0]
     # store each person name and his face encodings-converted from numpy array to list- in dict.
     known_faces = {"adel": face_encoding_of_adel.tolist(),
-                   "yossef": face_encoding_of_yossef.tolist(),
-                   "hashim": face_encoding_of_hashim.tolist()}
+                   "yossefْ": face_encoding_of_yossef.tolist(),
+                   "hashimْ": face_encoding_of_hashim.tolist()}
     # write dict in data file after updating it
     f = open("data.py", "w")
     f.write("known_faces = {}".format(known_faces))
@@ -86,12 +86,21 @@ def recognize(image):
     try:
         index = int([i for i, x in enumerate(results) if x][0])
         person = names[index]
+        if person == "adel":
+            person = 'عادل ابو هاشمْ'
+        elif person == "yossef":
+            person = 'يوسف خالدْ'
+        elif person == "hashim":
+            person = 'مُحمَدْ هاشمْ'
+
+
     except IndexError:
-        person = 'new face'
+        person = 'وجهٌ جديدْ'
     # return the name which is related to right face encodings.
     return person
+
 
 # load_test_data() # uncomment to test
 
 # test known image (PC)
-# print(recognize('test_data/new.jpg'))
+# print(recognize('test_data/hashim.jpg'))

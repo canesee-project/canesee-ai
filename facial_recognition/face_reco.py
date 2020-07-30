@@ -1,24 +1,27 @@
 """
 @author: Adel Abu Hashim
+adel.muha16@gmail.com
+last edit: 30 jul 2020
 """
 
 import face_recognition as face
+import data
 
-known_faces = {}
+# fetching stored data
+known_faces = data.known_faces
 
-def init ():
+
+def init():
     """
     Load dataset from datafile .
     """
     global known_faces
-    import data
-    known_faces = data.known_faces
 
 
-def load_test_data ():
-    '''
+def load_test_data():
+    """
     add test data
-    '''
+    """
     # load test images
     image_of_adel = face.load_image_file("test_data/adel.jpg")
     image_of_yossef = face.load_image_file("test_data/yossef.jpg")
@@ -36,7 +39,8 @@ def load_test_data ():
     f.write("known_faces = {}".format(known_faces))
     f.close()
 
-def new_face (image, name):
+
+def new_face(image, name):
     """
        Add new face to data set.
        Args:
@@ -45,7 +49,7 @@ def new_face (image, name):
        """
     # import known_faces from data file.
     global known_faces
-    image = face.load_image_file(image) #uncomment to test on loaded image file
+    image = face.load_image_file(image)  # uncomment to test on loaded image file
     # add new element to known_faces dict.
     # use "tolist()" to permit importing dict.
     known_faces[name] = face.face_encodings(image)[0].tolist()
@@ -53,8 +57,6 @@ def new_face (image, name):
     f = open("data.py", "w")
     f.write("known_faces = {}".format(known_faces))
     f.close()
-
-
 
 
 def recognize(image):
@@ -67,30 +69,29 @@ def recognize(image):
        """
     # import known_faces from data file.
     global known_faces
-    #input_image = face.load_image_file(image) #uncomment to test on loaded image file
+    # input_image = face.load_image_file(image)  # uncomment to test on loaded image file (PC)
 
     # extract face encodings of image in numpy array
-    input_image = image
-    #input_image_encodings = face.face_encodings(input_image)
+    input_image = image  # (PI)
+    input_image_encodings = face.face_encodings(input_image)
     # making two lists; dict values and names.
     known_faces_encodings = list(known_faces.values())
     names = list(known_faces.keys())
+
     # compare stored face encodings with unknown image encodings.
     for input_image_encoding in input_image_encodings:
         results = face.compare_faces(known_faces_encodings, input_image_encoding)
-        # extract index which is true in results list.
+
+    # extract index which is true in results list.
+    try:
         index = int([i for i, x in enumerate(results) if x][0])
-    # return the name which is related two right face encodings.
-    return names[index]
+        person = names[index]
+    except IndexError:
+        person = 'new face'
+    # return the name which is related to right face encodings.
+    return person
 
-#load_test_data() #Uncomment to test
+# load_test_data() # uncomment to test
 
-##test known image
-#print(recognize('test_data/adel.jpg'))
-
-
-
-
-
-
-
+# test known image (PC)
+# print(recognize('test_data/new.jpg'))

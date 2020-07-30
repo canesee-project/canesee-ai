@@ -1,0 +1,7 @@
+Click==7.0
+cmake==3.16.3
+dlib==19.8.1
+face-recognition==1.2.2
+face-recognition-models==0.3.0
+numpy==1.18.1
+Pillow==6.2.2

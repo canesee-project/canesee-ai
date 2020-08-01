@@ -3,6 +3,7 @@
 
 import serial
 import time
+from utils import log
 
 
 class BluetoothConnection:
@@ -19,4 +20,4 @@ class BluetoothConnection:
         self.port.write((text+'\n').encode())
         self.port.flushOutput()
         time.sleep(0.2)
-        print("sent: ", text.encode())
+        log("sent: ", text)

@@ -1,5 +1,6 @@
 
-
+import locale
+locale.setlocale(locale.LC_ALL, 'C')
 import tesserocr
 from PIL import Image
 
@@ -10,6 +11,3 @@ def ocr (image, language):
     """
     result = tesserocr.image_to_text(image, lang= language)
     return result
-
-"example: "
-print(ocr(Image.open('wh.PNG'), 'ara'))

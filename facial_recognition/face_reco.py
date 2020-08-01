@@ -5,17 +5,17 @@ last edit: 30 jul 2020
 """
 
 import face_recognition as face
-import data
 
-# fetching stored data
-known_faces = data.known_faces
+known_faces = None
 
 
 def init():
     """
     Load dataset from datafile .
     """
+    from .data import known_faces as faces
     global known_faces
+    known_faces = faces
 
 
 def load_test_data():
@@ -31,6 +31,7 @@ def load_test_data():
     face_encoding_of_yossef = face.face_encodings(image_of_yossef)[0]
     face_encoding_of_hashim = face.face_encodings(image_of_hashim)[0]
     # store each person name and his face encodings-converted from numpy array to list- in dict.
+    global known_faces
     known_faces = {"adel": face_encoding_of_adel.tolist(),
                    "yossefْ": face_encoding_of_yossef.tolist(),
                    "hashimْ": face_encoding_of_hashim.tolist()}
@@ -67,8 +68,6 @@ def recognize(image):
         Returns:
             names[index] - Recognized person name.
        """
-    # import known_faces from data file.
-    global known_faces
     # input_image = face.load_image_file(image)  # uncomment to test on loaded image file (PC)
 
     # extract face encodings of image in numpy array

@@ -7,7 +7,9 @@ import queue
 from bluetooth import BluetoothConnection
 from camera_feed import run_video_cam, capture
 from io_types import *
-from object_detection.objectDetection_lite import detect as detect_objects
+from object_detection.tflite_objectDetection import detect as detect_objects
+from facial_recognition.face_reco import recognize as face_reco
+from ocr.ocr import ocr
 import time
 
 from utils import pretty_objects, json_of_result, log
@@ -21,6 +23,7 @@ def fetch_new_tasks(remote: BluetoothConnection):
     while True:
         line = remote.read().decode()
         tasks.put(line)
+        time.sleep(0.5)
 
 
 def process_tasks(remote: BluetoothConnection):
@@ -34,16 +37,18 @@ def process_tasks(remote: BluetoothConnection):
             change_type = int(task_segments[1])
             if change_type == MODE_CHANGE_OCR:
                 log('MODE_CHANGE_OCR')
-                # TODO
+                transcript = ocr(capture(), 'ara+eng')
+                log('ocr: ', transcript)
+                remote.send(json_of_result(RESULT_OCR, transcript))
             elif change_type == MODE_CHANGE_SCENE:
                 log('MODE_CHANGE_SCENE')
-                # TODO
             elif change_type == MODE_CHANGE_FACE_RECOGNITION:
                 log('MODE_CHANGE_FACE_RECOGNITION')
-                # TODO
+                face = face_reco(capture())
+                log('face: ', face)
+                remote.send(json_of_result(RESULT_FACE_RECOGNITION, face)) 
             elif change_type == MODE_CHANGE_EMOTIONS:
                 log('MODE_CHANGE_EMOTIONS')
-                # TODO
             elif change_type == MODE_CHANGE_OBJECT_DETECTION:
                 log('MODE_CHANGE_OBJECT_DETECTION')
                 objs = pretty_objects(detect_objects(capture()))

@@ -9,5 +9,5 @@ def ocr (image, language):
     args: input image
      language; eg: 'ara' fro arabic, 'en' for english ... etc
     """
-    result = tesserocr.image_to_text(image, lang= language)
+    result = tesserocr.image_to_text(Image.fromarray(image), lang=language)
     return result

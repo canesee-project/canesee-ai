@@ -119,7 +119,7 @@ def init():
     # labels = load_labels("labelmap.txt")
 
     # Load TFLite model and allocate tensors.
-    interpreter = tflite.Interpreter(model_path="detect.tflite")
+    interpreter = tflite.Interpreter(model_path="object_detection/detect.tflite") # python relative paths suck.
     interpreter.allocate_tensors()
 
 
